@@ -6,6 +6,129 @@ import java.nio.file.Paths;
 
 // Driver Code
 public class Main {
+	static ArrayList<String> allRows = new ArrayList<>();
+	static ArrayList<String> row1 = new ArrayList<>();
+	static ArrayList<String> row2 = new ArrayList<>();
+	static ArrayList<String> row3 = new ArrayList<>();
+
+	public static void main(String[] args) throws IOException {
+
+		Graph g = new Graph();
+		Dictionary d = new Dictionary();
+		Scanner sc = new Scanner(System.in);
+		
+		Map<String, List<String>> graph = new HashMap<>();
+		
+		introMessage();
+
+		do {
+			row1.clear();
+			System.out.print("Enter Row A (Ex: A, B, C, D): ");
+
+			String[] parts = sc.next().split(",");
+        	for (String part : parts) {
+				if(allRows.contains(part.toUpperCase()))
+				{
+					int occurrences = countStringsStartingWith(allRows,part.toUpperCase());
+					String formattedString = (part.trim() + occurrences).toUpperCase();
+					row1.add(formattedString);
+					allRows.add(formattedString);
+				}
+				else
+				{
+					String formattedString = (part.trim().toUpperCase());
+					row1.add(formattedString);
+					allRows.add(formattedString);
+				}
+            	
+        	}
+		} while ((row1.size() > 4 || row1.size() < 4));
+
+		do {
+			row2.clear();
+			System.out.print("Enter Row B (Ex: A, B, C, D, E): ");
+
+			String[] parts = sc.next().split(",");
+        	for (String part : parts) {
+            	if(allRows.contains(part.toUpperCase()))
+				{
+					int occurrences = countStringsStartingWith(allRows,part.toUpperCase());
+					String formattedString = (part.trim() + occurrences).toUpperCase();
+
+					row2.add(formattedString);
+					allRows.add(formattedString);
+				}
+				else
+				{
+					String formattedString = (part.trim().toUpperCase());
+					row2.add(formattedString);
+					allRows.add(formattedString);
+				}
+        	}
+		} while ((row2.size() > 5 || row2.size() < 5));
+		
+		do {
+			row3.clear();
+			System.out.print("Enter Row C (Ex: A, B, C, D): ");
+
+			String[] parts = sc.next().split(",");
+        	for (String part : parts) {
+            	if(allRows.contains(part.toUpperCase()))
+				{
+					int occurrences = countStringsStartingWith(allRows,part.toUpperCase());
+					String formattedString = (part.trim() + occurrences).toUpperCase();
+
+					row3.add(formattedString);
+					allRows.add(formattedString);
+				}
+				else
+				{
+					String formattedString = (part.trim().toUpperCase());
+					row3.add(formattedString);
+					allRows.add(formattedString);
+				}
+        	}
+		} while ((row3.size() > 4 || row3.size() < 4));
+
+		System.out.println("\nFollow same letter as below:");
+
+		graph.put(row1.get(0), nodeListFormatter(new int[][] {{0,1},{1,1},{1,0}}));
+		graph.put(row1.get(1), nodeListFormatter(new int[][] {{0,0},{1,1},{1,2},{0,2}}));
+		graph.put(row1.get(2), nodeListFormatter(new int[][] {{0,1},{1,2},{1,3},{0,3}})); 
+		graph.put(row1.get(3), nodeListFormatter(new int[][] {{0,2},{1,3},{1,4}}));
+		graph.put(row2.get(0), nodeListFormatter(new int[][] {{0,0},{1,1},{2,0}}));
+		graph.put(row2.get(1), nodeListFormatter(new int[][] {{0,0},{1,0},{2,0},{2,1},{1,2},{0,1}}));
+		graph.put(row2.get(2), nodeListFormatter(new int[][] {{0,1},{1,1},{2,1},{2,2},{1,3},{0,2}}));
+		graph.put(row2.get(3), nodeListFormatter(new int[][] {{0,2},{1,2},{2,2},{2,3},{1,4},{0,3}}));
+		graph.put(row2.get(4), nodeListFormatter(new int[][] {{0,3},{1,3},{2,3}}));
+		graph.put(row3.get(0), nodeListFormatter(new int[][] {{1,0},{1,1},{2,1}}));
+		graph.put(row3.get(1), nodeListFormatter(new int[][] {{2,0},{1,1},{1,2},{2,2}}));
+		graph.put(row3.get(2), nodeListFormatter(new int[][] {{2,1},{1,2},{1,3},{2,3}}));
+		graph.put(row3.get(3), nodeListFormatter(new int[][] {{2,2},{1,3},{1,4}}));
+
+		for (int i = 0; i < 5; i++) {
+			System.out.println(" \n" + row1);
+			System.out.println(row2);
+			System.out.println(" " + row3);
+			System.out.print("\nEnter Starting Letter: ");
+			String startNode = (sc.next()).toUpperCase();
+			System.out.print("Enter Word Length: ");
+			int pathLength =  sc.nextInt();
+
+			List<List<String>> result = g.findPaths(graph, startNode, pathLength);
+
+			System.out.println("\nPossible Word Options: ");
+			for (List<String> path : result) {
+				
+				if(d.contains(concatenation(path)))
+				{
+					System.out.println(concatenation(path));
+				}
+			}
+		}
+		
+	}
+	
 
 	public static String numRemover(String input)
 	{
@@ -21,69 +144,42 @@ public class Main {
 		}
 		return result.toLowerCase();
 	}
-	public static List<List<String>> findPaths(Map<String, List<String>> graph, String start, int n) {
-        List<List<String>> paths = new ArrayList<>();
-        List<String> path = new ArrayList<>();
-        path.add(start);
-        dfs(graph, start, n, path, paths);
-        return paths;
-    }
 
-	//Depth First Search Implementation
-    private static void dfs(Map<String, List<String>> graph, String node, int n, List<String> path, List<List<String>> paths) {
-        if (path.size() == n) {
-            paths.add(new ArrayList<>(path));
-            return;
-        }
+	public static String introMessage()
+	{
+		String result = "";
+		result += ("Row A:  _ _ _ _ \n");
+		result += ("Row B: _ _ _ _ _\n");
+		result += ("Row C:  _ _ _ _ \n");
+		return result;
+	}
 
-        if (!graph.containsKey(node)) {
-            return;
-        }
+	public static List<String> nodeListFormatter(int[][] indexes)
+	{
+		//[[Graph Row , Graph Col], [Graph Row , Graph Col]]
+		ArrayList<String> stringArr = new ArrayList<>();
 
-        for (String neighbor : graph.get(node)) {
-            path.add(neighbor);
-            dfs(graph, neighbor, n, path, paths);
-            path.remove(path.size() - 1);
-        }
-    }
-	
-	public static void main(String[] args) throws IOException {
-		Map<String, List<String>> graph = new HashMap<>();
-		graph.put("A", (Arrays.asList("B", "C")));
-		graph.put("B", (Arrays.asList("A", "C", "D")));
-		graph.put("C", (Arrays.asList("A", "B", "D")));
-		graph.put("D", (Arrays.asList("B", "C")));
-
-		graph.put("A1", (Arrays.asList("C","T","L")));
-		graph.put("L", (Arrays.asList("A1","T","I","A2")));
-		graph.put("A2", (Arrays.asList("L","I","U","N1")));
-		graph.put("N1", (Arrays.asList("A2","U","A3")));
-		graph.put("C", (Arrays.asList("A1","T","A4")));
-		graph.put("T", (Arrays.asList("A1","C","A4","N2","I","L")));
-		graph.put("I", (Arrays.asList("T","N2","G","U","A2","L")));
-		graph.put("U", (Arrays.asList("A2","I","G","M","A3","N1")));
-		graph.put("A3", (Arrays.asList("N1","U","M")));
-		graph.put("A4", (Arrays.asList("C","T","N2")));
-		graph.put("N2", (Arrays.asList("A4","T","I","G")));
-		graph.put("G", (Arrays.asList("N2","I","U","M")));
-		graph.put("M", (Arrays.asList("G","U","A3")));
-
-		String startNode = "G";
-		int pathLength = 5;
-
-		List<List<String>> result = findPaths(graph, startNode, pathLength);
-
-		Dictionary d = new Dictionary();
-		for (List<String> path : result) {
-			
-			if(d.contains(concatenation(path)))
+		for (int[] arr : indexes) {
+			switch (arr[0]) 
 			{
-				System.out.println(concatenation(path));
+				case 0:
+					stringArr.add(row1.get(arr[1]));
+					break;
+				case 1:
+					stringArr.add(row2.get(arr[1]));
+					break;
+				case 2:
+					stringArr.add(row3.get(arr[1]));
+					break;
 			}
 		}
 
-		
+		return stringArr;
 	}
+
+	public static int countStringsStartingWith(List<String> list, String startingChar) {
+        return (int) list.stream().filter(s -> s.startsWith((startingChar))).count();
+    }
 }
 
 
